@@ -1,6 +1,14 @@
 package pt.ubiquity.sparktemplate;
 
-import static spark.Spark.*;
+import static spark.Spark.before;
+import static spark.Spark.delete;
+import static spark.Spark.get;
+import static spark.Spark.options;
+import static spark.Spark.post;
+import static spark.Spark.put;
+import static spark.Spark.halt;
+
+import java.util.HashMap;
 
 import com.google.gson.Gson;
 
@@ -17,19 +25,38 @@ public class Routes {
 
 	public static Gson gson = new Gson();
 	private UserDAO userDAO;
-
+	private HashMap<String,SysUser> sessions = null;
+	
+	
 	public void initRoutes() {
 		Spark.externalStaticFileLocation(ServerStart.appProperties.getFrontEndPath());
 		userDAO = ServerStart.userDAO;
+		sessions = new HashMap<String,SysUser>();
 		enableCORS();
 		userServices();
 		authServices();
 	}
 	
 	public void authServices(){
+		before((req,res)-> {
+			if(!req.pathInfo().equalsIgnoreCase("/login")){
+				if(sessions.get(req.headers("x-auth-token")) == null){
+					halt(401, "Failed to authenticate.");
+				}
+			}
+		});
 		post("/login", (req, res) -> {
 			SysUser user = gson.fromJson(req.body(), SysUser.class);
-			return userDAO.login(user);
+			SysUser authed = userDAO.login(user);
+			sessions.put(authed.getToken(),authed);
+			return authed.getToken();
+		});
+		post("/logout", (req,res) -> {
+			if(sessions.get(req.headers("x-auth-token")) != null){
+				return gson.toJson(sessions.remove(req.headers("x-auth-token")));
+			}
+			res.status(401);
+			return "Invalid auth token";
 		});
 	}
 

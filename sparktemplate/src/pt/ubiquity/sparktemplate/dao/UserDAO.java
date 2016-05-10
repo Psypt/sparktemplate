@@ -27,7 +27,7 @@ public class UserDAO {
 		return ServerStart.persistenceUnit.getEntityManager();
 	}
 	
-	public String login(SysUser user){
+	public SysUser login(SysUser user){
 		CriteriaBuilder qb = getEntityManager().getCriteriaBuilder();
 		CriteriaQuery<SysUser> criteria = qb.createQuery(SysUser.class);
 		Root<SysUser> p = criteria.from(SysUser.class);
@@ -45,7 +45,7 @@ public class UserDAO {
 			token = UUID.randomUUID().toString();
 			res.setToken(token);
 		}
-	    return token;
+	    return res;
 	}
 	
 	public void add(SysUser user){
