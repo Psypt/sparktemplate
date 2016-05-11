@@ -7,7 +7,7 @@ import pt.ubiquity.sparktemplate.util.ConfigPersistenceUnit;
 
 public class ServerStart {
 
-	private static Routes routes = new Routes();
+	public static Routes routes = new Routes();
 	public static AppProperties appProperties = new AppProperties();
 	public static DBConnector dbConnector = new DBConnector();
 	public static ConfigPersistenceUnit persistenceUnit = new ConfigPersistenceUnit();

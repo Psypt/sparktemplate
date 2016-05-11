@@ -3,10 +3,10 @@ package pt.ubiquity.sparktemplate;
 import static spark.Spark.before;
 import static spark.Spark.delete;
 import static spark.Spark.get;
+import static spark.Spark.halt;
 import static spark.Spark.options;
 import static spark.Spark.post;
 import static spark.Spark.put;
-import static spark.Spark.halt;
 
 import java.util.HashMap;
 
@@ -102,6 +102,10 @@ public class Routes {
 			userDAO.delete(id);
 			return "User with id " + id + " deleted with sucess.";
 		});
+	}
+	
+	public void stop(){
+		spark.Spark.stop();
 	}
 
 	public void enableCORS() {
